@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book IT</title>
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-brand">
+                <h1><span class="colored-text">Book</span> IT</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#home">Acceuil</a>
+                <a href="#services">Services</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="nav-buttons">
+                <a id="signupBtn" href="/inscrire" class="btn-secondary">S'inscrire</a>
+                <a id="loginBtn" href="/connecter" class="btn-primary">Se connecter</a>
+                <a id="logoutBtn" href="#" class="btn-primary" style="display: none;">Se déconnecter</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Réservez votre place -<span class="highlight"> Offres limitées</span> en attente!</h1>
+                    <p class="hero-description">
+                        Explorez des possibilités infinies avec TravelEase. Votre compagnon de confiance pour des réservations faciles et des voyages inoubliables.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="/products" class="cta-button primary">Découvrez des offres</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="/hotel.jpg" alt="Hotel Room" width="600">
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services-section">
+            <h2>Nos Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Découvrez des lieux</h3>
+                    <p>Découvrez des lieux du monde entier en quelques clics.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Communauté en toute sécurité</h3>
+                    <p>Réservez en toute confiance grâce à notre système sécurisé et notre protection des réservations.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-comments"></i>
+                    <h3>Services Rapides</h3>
+                    <p>Découvrez des offres exceptionnelles chaque jour et profitez de réductions exclusives sur vos réservations.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content" id="contact">
+            <div class="footer-section">
+                <h3>BookIT</h3>
+                <p>Votre plateforme de confiance pour réserver facilement et vivre des expériences inoubliables.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="#home">Acceuil</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Book IT</p>
+        </div>
+    </footer>
+
+    <script>
+        window.onload = function() {
+            const isLoggedIn = localStorage.getItem('connectedTel'); // Check if user is logged in
+
+            if (isLoggedIn) {
+                // Hide login buttons and show logout button
+                document.getElementById('signupBtn').style.display = 'none';
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+
+                // Logout button handler
+                document.getElementById('logoutBtn').onclick = function() {
+                    localStorage.removeItem('connectedTel'); // Log out by clearing localStorage
+                    location.reload(); // Reload page to reflect the changes
+                };
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book IT - Booking</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="products.css">
+	<style>
+	    /* Modal Styles */
+	    .modal {
+	        display: none;
+	        position: fixed;
+	        top: 0;
+	        left: 0;
+	        width: 100%;
+	        height: 100%;
+	        background-color: rgba(0, 0, 0, 0.5);
+	        justify-content: center;
+	        align-items: center;
+	        z-index: 1000;
+	    }
+	    .modal-content {
+	        background: white;
+	        border-radius: 10px;
+	        padding: 20px;
+	        width: 400px; /* Fixed width */
+	        height: auto; /* Allow height to adjust based on content */
+	        max-height: 80%; /* Limit the height of the modal */
+	        overflow-y: auto; /* Allow scrolling if content exceeds the max height */
+	        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	        text-align: center;
+	    }
+	    .modal-header {
+	        font-size: 1.5rem;
+	        margin-bottom: 20px;
+	    }
+	    .modal form input, .modal form label {
+	        display: block;
+	        width: 100%;
+	        margin-bottom: 15px;
+	        font-size: 1rem;
+	    }
+	    .modal form input {
+	        padding: 10px;
+	        border: 1px solid #ddd;
+	        border-radius: 5px;
+	    }
+	    .modal form button {
+	        padding: 10px 15px;
+	        background: var(--primary-color);
+	        color: white;
+	        border: none;
+	        border-radius: 5px;
+	        cursor: pointer;
+	        width: 100%;
+	    }
+	    .modal form button:hover {
+	        background: var(--primary-dark);
+	    }
+	    .close-btn {
+	        float: right;
+	        cursor: pointer;
+	        font-size: 1.5rem;
+	        color: #333;
+	    }
+	</style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-brand">
+                <h1><span class="colored-text">Book</span> IT</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/#home">Acceuil</a>
+                <a href="/#services">Services</a>
+                <a href="/#contact">Contact</a>
+            </div>
+            <div class="nav-buttons">
+                <a id="signupBtn" href="/inscrire" class="btn-secondary">S'inscrire</a>
+                <a id="loginBtn" href="/connecter" class="btn-primary">Se connecter</a>
+                <a id="logoutBtn" href="#" class="btn-primary" style="display: none;">Se déconnecter</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="products-section">
+            <div class="products-header">
+                <h1>Chambres Disponibles</h1>
+                <p>Découvrez nos chambres avec des offres limitées pour une expérience inoubliable.</p>
+            </div>
+
+            <div class="products-grid">
+                <!-- Rooms will be dynamically loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="reservationModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="modal-header">Réserver cette chambre</div>
+            <form id="reservationForm">
+                <label for="prenom">Prénom:</label>
+                <input type="text" id="prenom" name="prenom" required>
+
+                <label for="nom">Nom:</label>
+                <input type="text" id="nom" name="nom" required>
+
+                <label for="cin">CIN:</label>
+                <input type="text" id="cin" name="cin" required>
+
+                <label for="tel">Téléphone:</label>
+                <input type="text" id="tel" name="tel" required>
+
+                <label for="startDate">Date de commencement:</label>
+                <input type="date" id="startDate" name="startDate" required>
+
+                <label for="endDate">Date de fin:</label>
+                <input type="date" id="endDate" name="endDate" required>
+
+                <button type="submit">Confirmer la réservation</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content" id="contact">
+            <div class="footer-section">
+                <h3>BookIT</h3>
+                <p>Votre plateforme de confiance pour réserver facilement et vivre des expériences inoubliables.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Liens Rapides</h4>
+                <ul>
+                    <li><a href="/#home">Acceuil</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Book IT</p>
+        </div>
+    </footer>
+
+	<script>
+	// Fetch available rooms and display them
+	async function fetchChambres() {
+	    try {
+	        const response = await fetch('http://localhost:8082/api/chambres/available');
+	        const chambres = await response.json();
+
+	        const productsGrid = document.querySelector('.products-grid');
+	        productsGrid.innerHTML = ''; // Clear the grid before adding new cards
+
+	        const isLoggedIn = localStorage.getItem('connectedTel'); // Check if user is logged in
+
+	        chambres.forEach(chambre => {
+				const card = document.createElement('div');
+				card.classList.add('product-card');
+	            
+				// Create card content with button disabled if not logged in
+				card.innerHTML = `
+	                <img src="${chambre.image}" alt="${chambre.titre}">
+	                <div class="product-details">
+	                    <h3>${chambre.titre}</h3>
+	                    <p class='product-category'>Type: ${chambre.type}</p>
+	                    <p>${chambre.description}</p><br> 
+	                    <!-- Disable button if not logged in -->
+	                    <button class='add-to-cart' onclick='openModal("${chambre.id}")' ${!isLoggedIn ? 'disabled' : ''}>
+	                        Réserver
+	                    </button> 
+	                </div>`;
+	                
+				productsGrid.appendChild(card);
+			});
+		} catch (error) {
+			console.error('Error fetching chambres:', error);
+		}
+	}
+
+	// Open reservation modal and handle form submission
+	function openModal(chambreId) {
+		const modal = document.getElementById('reservationModal');
+		modal.style.display = 'flex';
+	    
+		document.getElementById('reservationForm').onsubmit = async function(event) {
+			event.preventDefault();
+
+			const formData = new FormData(event.target);
+			const data = Object.fromEntries(formData.entries());
+			data.chambreId = chambreId;
+
+			try {
+				const response = await fetch('http://localhost:8082/api/chambres/reserve', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+
+				if (response.ok) {
+					alert('Réservation réussie!');
+					closeModal();
+					fetchChambres(); // Refresh the room list after reservation
+				} else {
+					const error = await response.text();
+					alert(error);
+				}
+			} catch (error) {
+				console.error('Error reserving chambre:', error);
+				alert('Une erreur s\'est produite.');
+			}
+		};
+	}
+
+	// Close reservation modal
+	function closeModal() {
+		const modal = document.getElementById('reservationModal');
+		modal.style.display = 'none';
+	}
+
+	// Handle page load
+	window.onload = function() {
+		const isLoggedIn = localStorage.getItem('connectedTel'); // Check if user is logged in
+
+		if (!isLoggedIn) {
+			window.location.href = '/connecter'; // Redirect to login page if not logged in
+			return; // Exit function after redirection
+		}
+
+		fetchChambres();
+
+		if (isLoggedIn) {
+			document.getElementById('signupBtn').style.display = 'none';
+			document.getElementById('loginBtn').style.display = 'none';
+			document.getElementById('logoutBtn').style.display = 'inline-block';
+
+			document.getElementById('logoutBtn').onclick = function() {
+				localStorage.removeItem('connectedTel'); // Log out by clearing localStorage
+				location.reload(); // Reload page to reflect the changes
+			};
+		}
+	};
+	</script>
+</body>
+</html>
